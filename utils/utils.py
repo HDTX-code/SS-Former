@@ -2,6 +2,7 @@ import colorsys
 import math
 from functools import partial
 
+import numpy as np
 import torch
 import torchvision
 from torchvision.transforms import functional as F
@@ -77,7 +78,7 @@ def get_transform(train, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), 
 def get_model(model_name, num_classes, pre=None):
     model = build(model_name=model_name, class_num=num_classes)
     if pre is not None:
-        model.load_state_dict(torch.load(pre, map_location='cpu'))
+        model = load_model(model, pre)
     return model
 
 
@@ -157,6 +158,32 @@ def get_color(num_classes):
         colors = list(map(lambda x: colorsys.hsv_to_rgb(*x), hsv_tuples))
         colors = list(map(lambda x: (int(x[0] * 255), int(x[1] * 255), int(x[2] * 255)), colors))
     return colors
+
+
+# ---------------------------------------------------#
+#   加载model
+# ---------------------------------------------------#
+def load_model(model, model_path):
+    print('Loading weights into state dict...')
+    model_dict = model.state_dict()
+    pretrained_dict = torch.load(model_path, map_location='cpu')
+    a = {}
+    no_load = 0
+    for k, v in pretrained_dict.items():
+        try:
+            if np.shape(model_dict[k]) == np.shape(v):
+                a[k] = v
+            else:
+                no_load += 1
+        except:
+            print("模型加载出错")
+            no_load = -1
+            pass
+    model_dict.update(a)
+    model.load_state_dict(model_dict)
+    print("No_load: {}".format(no_load))
+    print('Finished!')
+    return model
 
 
 if __name__ == '__main__':

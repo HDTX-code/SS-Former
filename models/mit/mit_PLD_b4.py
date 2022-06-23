@@ -3,12 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from functools import partial
-from torch.nn import Sequential, Conv2d, UpsamplingBilinear2d
-from timm.models.layers import DropPath, to_2tuple, trunc_normal_
-from timm.models.registry import register_model
-from timm.models.vision_transformer import _cfg
+from timm.models.layers import to_2tuple, trunc_normal_
 import math
-import cv2
 
 from mmcv.cnn import build_norm_layer
 class Mlp(nn.Module):
@@ -321,12 +317,8 @@ class mit_b5(MixVisionTransformer):
             drop_rate=0.0, drop_path_rate=0.1)
 
 
-from einops import rearrange
-from torch.nn import *
-from mmcv.cnn import build_activation_layer, build_norm_layer
+
 from timm.models.layers import DropPath
-from einops.layers.torch import Rearrange
-import numpy as np
 import torch
 from torch.nn import Module, ModuleList, Upsample
 from mmcv.cnn import ConvModule
@@ -453,16 +445,16 @@ class mit_PLD_b4(nn.Module):
         features, layer1, layer2, layer3, layer4  = self.decode_head(features)
         up = UpsamplingBilinear2d(scale_factor=4)
         features = up(features)
-        return features
+        return {"out": features}
 
 
-    def _init_weights(self):
-        pretrained_dict = torch.load('/mnt/DATA-1/DATA-2/Feilong/scformer/models/mit/mit_b4.pth')
-        model_dict = self.backbone.state_dict()
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-        model_dict.update(pretrained_dict)
-        self.backbone.load_state_dict(model_dict)  
-        print("successfully loaded!!!!")     
+    # def _init_weights(self):
+    #     pretrained_dict = torch.load('/mnt/DATA-1/DATA-2/Feilong/scformer/models/mit/mit_b4.pth')
+    #     model_dict = self.backbone.state_dict()
+    #     pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+    #     model_dict.update(pretrained_dict)
+    #     self.backbone.load_state_dict(model_dict)
+    #     print("successfully loaded!!!!")
 
 
 

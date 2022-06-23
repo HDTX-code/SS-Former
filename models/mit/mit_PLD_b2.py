@@ -445,7 +445,7 @@ class mit_PLD_b2(nn.Module):
         features = self.decode_head(features)
         up = UpsamplingBilinear2d(scale_factor=4)
         features = up(features)
-        return features
+        return {"out": features}
 
     # def _init_weights(self):
     #     pretrained_dict = torch.load('/mnt/DATA-1/DATA-2/Feilong/scformer/models/mit/mit_b2.pth')

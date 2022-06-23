@@ -91,8 +91,9 @@ def main(args):
                                           collate_fn=val_dataset.collate_fn)
 
     # model初始化
-    model = get_model(model_name=args.model_name, num_classes=args.num_classes, pre=args.pretrained)
+    model = get_model(model_name=args.model_name, num_classes=args.num_classes + 1, pre=args.pretrained)
     model.to(device)
+    # print(model(torch.ones([1, 3, 224, 224], device=device))['out'].shape)
 
     # 获取lr下降函数
     lr_scheduler_func_Freeze, Init_lr_fit_Freeze, Min_lr_fit_Freeze = get_lr_fun(args.optimizer_type_Freeze,
@@ -252,7 +253,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b2')
     parser.add_argument('--save_dir', type=str, default="./weights")
     parser.add_argument('--resume', type=str, default="", help='resume')
-    parser.add_argument('--GPU', type=int, default=6, help='GPU_ID')
+    parser.add_argument('--GPU', type=int, default=3, help='GPU_ID')
     parser.add_argument('--size', type=int, default=256, help='pic size')
     parser.add_argument('--train', type=str, default=r"weights/val.txt", help="train_txt_path")
     parser.add_argument('--val', type=str, default=r"weights/val.txt", help="val_txt_path")
@@ -271,10 +272,9 @@ if __name__ == '__main__':
     parser.add_argument('--Freeze_Epoch', type=int, default=12, help="Freeze_Epoch")
     parser.add_argument('--UnFreeze_Epoch', type=int, default=24, help="UnFreeze_Epoch")
     parser.add_argument('--Init_Epoch', type=int, default=0, help="Init_Epoch")
-    parser.add_argument('--pretrained', default=False, action='store_true', help="pretrained")
+    parser.add_argument('--pretrained', default='weights/pretrained/ssformer_S.pth', type=str)
     parser.add_argument('--amp', default=True, action='store_true', help="amp or Not")
     parser.add_argument('--save_best', default=True, action='store_true', help="save best or save all")
-    parser.add_argument('--bilinear', default=False, action='store_true', help="bilinear or conv")
     parser.add_argument('--cls_weights', nargs='+', type=float, default=None, help='交叉熵loss系数')
     args = parser.parse_args()
 
