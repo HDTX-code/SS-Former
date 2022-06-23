@@ -99,7 +99,7 @@ def main(args):
     lr_scheduler_func_Freeze, Init_lr_fit_Freeze, Min_lr_fit_Freeze = get_lr_fun(args.optimizer_type_Freeze,
                                                                                  args.Freeze_batch_size,
                                                                                  args.Init_lr,
-                                                                                 args.Init_lr * 0.8,
+                                                                                 args.Init_lr * 0.5,
                                                                                  args.Freeze_Epoch,
                                                                                  args.lr_decay_type_Freeze)
     lr_scheduler_func_UnFreeze, Init_lr_fit_UnFreeze, Min_lr_fit_UnFreeze = get_lr_fun(args.optimizer_type_UnFreeze,
