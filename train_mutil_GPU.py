@@ -105,7 +105,7 @@ def main(args):
 
     model_without_ddp = model
     if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
         model_without_ddp = model.module
 
         # 获取lr下降函数
@@ -115,14 +115,14 @@ def main(args):
                                                                                      args.Min_lr_Freeze,
                                                                                      args.Freeze_Epoch,
                                                                                      args.lr_decay_type_Freeze,
-                                                                                     isFreeze=True)
+                                                                                     Auto=True)
         lr_scheduler_func_UnFreeze, Init_lr_fit_UnFreeze, Min_lr_fit_UnFreeze = get_lr_fun(args.optimizer_type_UnFreeze,
                                                                                            args.UnFreeze_batch_size,
                                                                                            args.Init_lr_UnFreeze,
                                                                                            args.Min_lr_UnFreeze,
                                                                                            args.UnFreeze_Epoch,
                                                                                            args.lr_decay_type_UnFreeze,
-                                                                                           isFreeze=False)
+                                                                                           Auto=False)
 
         # 记录loss lr map
         train_loss = []
@@ -269,18 +269,18 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training parameter setting')
-    parser.add_argument('--model_name', type=str, default='mit_PLD_b2', help='mit_PLD_b2 or mit_PLD_b4')
+    parser.add_argument('--model_name', type=str, default='mit_PLD_b4', help='mit_PLD_b2 or mit_PLD_b4')
     parser.add_argument('--device', default='cuda', help='device')
-    parser.add_argument('--size', type=int, default=256, help='pic size')
+    parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--save_dir', type=str, default="weights")
     parser.add_argument('--resume', type=str, default="", help='resume')
-    parser.add_argument('--train', type=str, default=r"weights/train.txt", help="train_txt_path")
-    parser.add_argument('--val', type=str, default=r"weights/val.txt", help="val_txt_path")
+    parser.add_argument('--train', type=str, default=r"weights/All_data/train.txt", help="train_txt_path")
+    parser.add_argument('--val', type=str, default=r"weights/All_data/val.txt", help="val_txt_path")
     parser.add_argument('--optimizer_type_Freeze', type=str, default='adam')
     parser.add_argument('--optimizer_type_UnFreeze', type=str, default='adam')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--Freeze_batch_size', type=int, default=30)
-    parser.add_argument('--UnFreeze_batch_size', type=int, default=24)
+    parser.add_argument('--Freeze_batch_size', type=int, default=148)
+    parser.add_argument('--UnFreeze_batch_size', type=int, default=28)
     parser.add_argument('--aspect_ratio_group_factor', type=int, default=3)
     parser.add_argument('--lr_decay_type_Freeze', type=str, default='cos', help="'step' or 'cos'")
     parser.add_argument('--lr_decay_type_UnFreeze', type=str, default='cos', help="'step' or 'cos'")
@@ -294,8 +294,9 @@ if __name__ == '__main__':
     parser.add_argument('--Freeze_Epoch', type=int, default=15, help="Freeze_Epoch")
     parser.add_argument('--UnFreeze_Epoch', type=int, default=85, help="UnFreeze_Epoch")
     parser.add_argument('--Init_Epoch', type=int, default=0, help="Init_Epoch")
-    parser.add_argument('--pretrained', default='weights/pretrained/ssformer_S.pth', type=str)
+    parser.add_argument('--pretrained', default=r'weights/loss_20220628215639/best_model_mit_PLD_b4.pth', type=str)
     parser.add_argument('--save_best', default=True, action='store_true', help="save best or save all")
+    parser.add_argument('--cls_weights', nargs='+', type=float, default=None, help='交叉熵loss系数')
     parser.add_argument('--amp', default=True, action='store_true', help="amp or Not")
     # 分布式进程数
     parser.add_argument('--world-size', default=1, type=int, help='number of distributed processes')

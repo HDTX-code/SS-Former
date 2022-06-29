@@ -256,7 +256,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--save_dir', type=str, default="./weights")
     parser.add_argument('--resume', type=str, default="", help='resume')
-    parser.add_argument('--GPU', type=int, default=1, help='GPU_ID')
+    parser.add_argument('--GPU', type=int, default=6, help='GPU_ID')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--train', type=str, default=r"weights/All_data/train.txt", help="train_txt_path")
     parser.add_argument('--val', type=str, default=r"weights/All_data/val.txt", help="val_txt_path")
