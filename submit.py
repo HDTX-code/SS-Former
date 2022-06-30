@@ -111,7 +111,7 @@ def main(args):
 
     # 生成提交csv
     sub_df = pd.DataFrame(columns=["id", "class", "predicted"])
-    class_dict = dict(zip([0, 1, 2], ['stomach', 'small_bowel', 'large_bowel']))
+    class_dict = ['stomach', 'small_bowel', 'large_bowel']
 
     # using compute_mean_std.py
     mean = (0.709, 0.381, 0.224)
