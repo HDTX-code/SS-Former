@@ -64,17 +64,16 @@ def make_predict_csv(pic_path, val_csv_path):
     class_df = pd.DataFrame(columns=["id", "path", "class_predict"])
     if os.path.exists(os.path.join(pic_path, 'test')):
         path_root = os.path.join(pic_path, 'test')
-        for item_case in os.listdir(path_root):
-            for item_day in os.listdir(os.path.join(path_root, item_case)):
-                path = os.path.join(path_root, item_case, item_day, 'scans')
-                data_list.extend(map(lambda x: os.path.join(path, x), os.listdir(path)))
-                for item_pic_path in data_list:
-                    class_df.loc[len(class_df)] = [item_day + '_' + item_pic_path[-32:-22], item_pic_path, ""]
         pre = True
     else:
-        val_csv = pd.read_csv(val_csv_path)
-        class_df[["id", "path", "class"]] = val_csv[["id", "path", "classes"]]
+        path_root = os.path.join(pic_path, 'train')
         pre = False
+    for item_case in os.listdir(path_root):
+        for item_day in os.listdir(os.path.join(path_root, item_case)):
+            path = os.path.join(path_root, item_case, item_day, 'scans')
+            data_list.extend(map(lambda x: os.path.join(path, x), os.listdir(path)))
+            for item_pic_path in data_list:
+                class_df.loc[len(class_df)] = [item_day + '_' + item_pic_path[-32:-22], item_pic_path, ""]
     class_df.index = list(range(len(class_df)))
     return class_df, pre
 
