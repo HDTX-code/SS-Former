@@ -156,8 +156,6 @@ def main(args):
         del df_ssub['predicted']
         sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
         assert len(sub_df) == len(df_ssub)
-    else:
-        class_df.to_csv(os.path.join(args.save_dir, 'class_predict.csv'), index=False)
     sub_df[['id', 'class', 'predicted']].to_csv(os.path.join(args.save_dir, 'submission.csv'), index=False)
 
 
