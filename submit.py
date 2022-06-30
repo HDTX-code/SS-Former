@@ -73,9 +73,9 @@ def make_predict_csv(pic_path):
             for item_day in os.listdir(os.path.join(path_root, item_case)):
                 path = os.path.join(path_root, item_case, item_day, 'scans')
                 data_list.extend(map(lambda x: os.path.join(path, x), os.listdir(path)))
-                for item_pic_path in data_list:
-                    class_df.loc[len(class_df)] = [item_day + '_' + item_pic_path[-32:-22], item_pic_path, ""]
             pbar.update(1)
+    for item_pic_path in data_list:
+        class_df.loc[len(class_df)] = [item_day + '_' + item_pic_path[-32:-22], item_pic_path, ""]
     class_df.index = list(range(len(class_df)))
     return class_df, pre
 
