@@ -16,9 +16,9 @@ from tqdm import tqdm
 
 from utils.utils import get_model
 
-# sys.path.append('../input/timm-pytorch-image-models/pytorch-image-models-master')
-# sys.path.append('../input/openmmlab-essential-repositories/openmmlab-repos/mmcv')
-# sys.path.append('../input/addict/addict')
+sys.path.append('../input/timm-pytorch-image-models/pytorch-image-models-master')
+sys.path.append('../input/openmmlab-essential-repositories/openmmlab-repos/mmcv')
+sys.path.append('../input/addict/addict')
 
 
 class TestdataSet(Dataset):
