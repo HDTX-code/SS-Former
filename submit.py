@@ -61,23 +61,26 @@ class TestdataSet(Dataset):
 
 def make_predict_csv(pic_path):
     data_list = []
+    case_day_list = []
     class_df = pd.DataFrame(columns=["id", "path", "class_predict"])
     if os.path.exists(os.path.join(pic_path, 'test')):
         path_root = os.path.join(pic_path, 'test')
-        pre = True
+        case_list = os.listdir(path_root)
     else:
         path_root = os.path.join(pic_path, 'train')
-        pre = True
-    with tqdm(total=len(os.listdir(path_root))) as pbar:
-        for item_case in os.listdir(path_root):
+        case_list = os.listdir(path_root)
+    with tqdm(total=len(case_list)) as pbar:
+        for item_case in case_list:
             for item_day in os.listdir(os.path.join(path_root, item_case)):
                 path = os.path.join(path_root, item_case, item_day, 'scans')
                 data_list.extend(map(lambda x: os.path.join(path, x), os.listdir(path)))
+                for len_item in os.listdir(path):
+                    case_day_list.append(item_day)
             pbar.update(1)
-    for item_pic_path in data_list:
-        class_df.loc[len(class_df)] = [item_day + '_' + item_pic_path[-32:-22], item_pic_path, ""]
+    for i, item_pic_path in enumerate(data_list):
+        class_df.loc[len(class_df)] = [case_day_list[i] + '_' + item_pic_path[-32:-22], item_pic_path, ""]
     class_df.index = list(range(len(class_df)))
-    return class_df, pre
+    return class_df, True
 
 
 def rle_encode(img):
@@ -152,14 +155,16 @@ def main(args):
             pbar.update()
 
     # 生成submission.csv
-    if pre:
+    if os.path.exists(os.path.join(args.pic_path, 'test')):
         df_ssub = pd.read_csv(os.path.join(args.pic_path, 'sample_submission.csv'))
         del df_ssub['predicted']
+        sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
+        assert len(sub_df) == len(df_ssub)
     else:
         df_ssub = pd.read_csv(os.path.join(args.pic_path, 'train.csv'))
         del df_ssub['segmentation']
-    sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
-    assert len(sub_df) == len(df_ssub)
+        sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
+
     sub_df[['id', 'class', 'predicted']].to_csv(os.path.join(args.save_dir, 'submission.csv'), index=False)
 
 
@@ -172,7 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=24, help="num_workers")
     parser.add_argument('--weights_path', default='weights/loss_20220629202632/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
-    parser.add_argument('--pic_path', type=str, default=r"D:\xlxz\uw-madison-gi-tract-image-segmentation",
+    parser.add_argument('--pic_path', type=str, default=r"C:\Users\12529\Desktop\test",
                         help="pic文件夹位置")
     parser.add_argument('--save_dir', type=str, default="./", help='存储文件夹位置')
     args = parser.parse_args()
