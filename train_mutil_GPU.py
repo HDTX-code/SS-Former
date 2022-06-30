@@ -158,7 +158,7 @@ def main(args):
                     train_sampler.set_epoch(epoch - 1)
                 set_optimizer_lr(optimizer, lr_scheduler_func_Freeze, epoch - 1)
                 mean_loss, lr = train_one_epoch(model, optimizer, gen_Freeze, device, epoch, args.num_classes + 1,
-                                                print_freq=int((len(gen_UnFreeze)) // 5),
+                                                print_freq=int((len(gen_Freeze)) // 5),
                                                 scaler=scaler, cls_weights=args.cls_weights)
                 confmat, dice = evaluate(model, gen_val, device=device, num_classes=2)
                 val_info = str(confmat)
@@ -183,7 +183,7 @@ def main(args):
 
                     if args.save_best is True:
                         if best_dice < val_dice[-1]:
-                            torch.save(save_file, os.path.join(log_dir, "best_model.pth"))
+                            torch.save(save_file, os.path.join(log_dir, "best_model_{}.pth".format(args.model_name)))
                             print('save best dice {}'.format(val_dice[-1]))
                             best_dice = val_dice[-1]
                     else:
@@ -250,12 +250,12 @@ def main(args):
                 if args.save_best is True:
                     if best_dice < val_dice[-1]:
                         torch.save(save_file, os.path.join(log_dir,
-                                                           "best_model_{}.pth".format(args.backbone)))
+                                                           "best_model_{}.pth".format(args.model_name)))
                         best_dice = val_dice[-1]
                         print('save best dice {}'.format(val_dice[-1]))
                 else:
                     torch.save(save_file, os.path.join(log_dir,
-                                                       "{}_epoch_{}_dice_{}.pth".format(args.backbone, epoch, dice)))
+                                                       "{}_epoch_{}_dice_{}.pth".format(args.model_name, epoch, dice)))
         print("---------End UnFreeze Train---------")
         total_time = time.time() - start_time
         total_time_str = str(datetime.timedelta(seconds=int(total_time)))
@@ -269,7 +269,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training parameter setting')
-    parser.add_argument('--model_name', type=str, default='mit_PLD_b4', help='mit_PLD_b2 or mit_PLD_b4')
+    parser.add_argument('--model_name', type=str, default='mit_PLD_b2', help='mit_PLD_b2 or mit_PLD_b4')
     parser.add_argument('--device', default='cuda', help='device')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--save_dir', type=str, default="weights")
@@ -294,7 +294,7 @@ if __name__ == '__main__':
     parser.add_argument('--Freeze_Epoch', type=int, default=15, help="Freeze_Epoch")
     parser.add_argument('--UnFreeze_Epoch', type=int, default=85, help="UnFreeze_Epoch")
     parser.add_argument('--Init_Epoch', type=int, default=0, help="Init_Epoch")
-    parser.add_argument('--pretrained', default=r'weights/loss_20220628215639/best_model_mit_PLD_b4.pth', type=str)
+    parser.add_argument('--pretrained', default=r'weights/loss_20220623192723/best_model_mit_PLD_b2.pth', type=str)
     parser.add_argument('--save_best', default=True, action='store_true', help="save best or save all")
     parser.add_argument('--cls_weights', nargs='+', type=float, default=None, help='交叉熵loss系数')
     parser.add_argument('--amp', default=True, action='store_true', help="amp or Not")
