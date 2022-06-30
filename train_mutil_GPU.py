@@ -158,7 +158,7 @@ def main(args):
                     train_sampler.set_epoch(epoch - 1)
                 set_optimizer_lr(optimizer, lr_scheduler_func_Freeze, epoch - 1)
                 mean_loss, lr = train_one_epoch(model, optimizer, gen_Freeze, device, epoch, args.num_classes + 1,
-                                                print_freq=int((num_train / args.Freeze_batch_size) // 5),
+                                                print_freq=int((len(gen_UnFreeze)) // 5),
                                                 scaler=scaler, cls_weights=args.cls_weights)
                 confmat, dice = evaluate(model, gen_val, device=device, num_classes=2)
                 val_info = str(confmat)
@@ -221,7 +221,7 @@ def main(args):
                 train_sampler.set_epoch(epoch - args.Freeze_Epoch)
             set_optimizer_lr(optimizer, lr_scheduler_func_UnFreeze, epoch - args.Freeze_Epoch)
             mean_loss, lr = train_one_epoch(model, optimizer, gen_UnFreeze, device, epoch, args.num_classes + 1,
-                                            print_freq=int((num_train / args.UnFreeze_batch_size) // 5), scaler=scaler,
+                                            print_freq=int((len(gen_UnFreeze)) // 5), scaler=scaler,
                                             cls_weights=args.cls_weights)
             confmat, dice = evaluate(model, gen_val, device=device, num_classes=2)
             val_info = str(confmat)
