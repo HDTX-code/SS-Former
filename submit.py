@@ -131,11 +131,11 @@ def main(args):
     # 开始预测
     print(args)
     print(pre)
-    with tqdm(total=len(class_df), mininterval=0.3) as pbar:
+    with tqdm(total=len(gen), mininterval=0.3) as pbar:
         for item_img, item_size, item in gen:
             with torch.no_grad():
                 prediction = model(item_img.to(device))['out']
-                for item_batch in prediction.shape[0]:
+                for item_batch in range(prediction.shape[0]):
                     predictions = F.resize(torch.stack(
                         [prediction[item_batch][[0, item_C + 1], ...].argmax(0) for item_C in range(args.num_classes)],
                         dim=0), item_size[item_batch],
