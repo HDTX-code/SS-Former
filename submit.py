@@ -59,7 +59,7 @@ class TestdataSet(Dataset):
         return image, size, item
 
 
-def make_predict_csv(pic_path, val_csv_path):
+def make_predict_csv(pic_path):
     data_list = []
     class_df = pd.DataFrame(columns=["id", "path", "class_predict"])
     if os.path.exists(os.path.join(pic_path, 'test')):
@@ -106,7 +106,7 @@ def main(args):
     model.eval()
 
     # 获取预测csv
-    class_df, pre = make_predict_csv(args.pic_path, args.val_csv_path)
+    class_df, pre = make_predict_csv(args.pic_path)
 
     # 生成提交csv
     sub_df = pd.DataFrame(columns=["id", "class", "predicted"])
@@ -172,8 +172,6 @@ if __name__ == '__main__':
                         help='training weights')
     parser.add_argument('--pic_path', type=str, default=r"D:\xlxz\uw-madison-gi-tract-image-segmentation",
                         help="pic文件夹位置")
-    parser.add_argument('--val_csv_path', type=str,
-                        default=r"D:\xlxz/val_csv.csv", help='预测csv路径')
     parser.add_argument('--save_dir', type=str, default="./", help='存储文件夹位置')
     args = parser.parse_args()
 
