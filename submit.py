@@ -152,9 +152,11 @@ def main(args):
     # 生成submission.csv
     if pre:
         df_ssub = pd.read_csv(os.path.join(args.pic_path, 'sample_submission.csv'))
-        del df_ssub['predicted']
-        sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
-        assert len(sub_df) == len(df_ssub)
+    else:
+        df_ssub = pd.read_csv(os.path.join(args.pic_path, 'train.csv'))
+    del df_ssub['predicted']
+    sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
+    assert len(sub_df) == len(df_ssub)
     sub_df[['id', 'class', 'predicted']].to_csv(os.path.join(args.save_dir, 'submission.csv'), index=False)
 
 
