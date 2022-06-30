@@ -67,7 +67,7 @@ def make_predict_csv(pic_path):
         pre = True
     else:
         path_root = os.path.join(pic_path, 'train')
-        pre = False
+        pre = True
     with tqdm(total=len(os.listdir(path_root))) as pbar:
         for item_case in os.listdir(path_root):
             for item_day in os.listdir(os.path.join(path_root, item_case)):
