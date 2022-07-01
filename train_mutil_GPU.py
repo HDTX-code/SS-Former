@@ -269,7 +269,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Training parameter setting')
-    parser.add_argument('--model_name', type=str, default='mit_PLD_b2', help='mit_PLD_b2 or mit_PLD_b4')
+    parser.add_argument('--model_name', type=str, default='mit_PLD_b4', help='mit_PLD_b2 or mit_PLD_b4')
     parser.add_argument('--device', default='cuda', help='device')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--save_dir', type=str, default="weights")
@@ -282,7 +282,7 @@ if __name__ == '__main__':
     parser.add_argument('--Freeze_batch_size', type=int, default=148)
     parser.add_argument('--UnFreeze_batch_size', type=int, default=28)
     parser.add_argument('--aspect_ratio_group_factor', type=int, default=3)
-    parser.add_argument('--lr_decay_type_Freeze', type=str, default='cos', help="'step' or 'cos'")
+    parser.add_argument('--lr_decay_type_Freeze', type=str, default='step', help="'step' or 'cos'")
     parser.add_argument('--lr_decay_type_UnFreeze', type=str, default='cos', help="'step' or 'cos'")
     parser.add_argument('--num_workers', type=int, default=24, help="num_workers")
     parser.add_argument('--Init_lr_Freeze', type=float, default=1e-4, help="max lr Freeze")
@@ -294,7 +294,7 @@ if __name__ == '__main__':
     parser.add_argument('--Freeze_Epoch', type=int, default=15, help="Freeze_Epoch")
     parser.add_argument('--UnFreeze_Epoch', type=int, default=85, help="UnFreeze_Epoch")
     parser.add_argument('--Init_Epoch', type=int, default=0, help="Init_Epoch")
-    parser.add_argument('--pretrained', default=r'weights/loss_20220623192723/best_model_mit_PLD_b2.pth', type=str)
+    parser.add_argument('--pretrained', default=r'weights/pretrained/ssformer_L.pth', type=str)
     parser.add_argument('--save_best', default=True, action='store_true', help="save best or save all")
     parser.add_argument('--cls_weights', nargs='+', type=float, default=None, help='交叉熵loss系数')
     parser.add_argument('--amp', default=True, action='store_true', help="amp or Not")
