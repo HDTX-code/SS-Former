@@ -1,4 +1,5 @@
 import argparse
+import math
 import os
 import time
 
@@ -18,6 +19,22 @@ from utils.utils import get_model
 def time_synchronized():
     torch.cuda.synchronize() if torch.cuda.is_available() else None
     return time.time()
+
+
+def Pre_pic(pic_path):
+    png = cv2.imread(pic_path)
+    if not (png == 0).all():
+        png = png * 5
+        png[png > 255] = 255
+        png = gamma_trans(png, math.log10(0.5) / math.log10(np.mean(png[png > 0]) / 255))
+    image = Image.fromarray(cv2.cvtColor(png, cv2.COLOR_BGR2RGB)).convert('RGB')
+    return image
+
+
+def gamma_trans(img, gamma):
+    gamma_table = [np.power(x / 255.0, gamma) * 255.0 for x in range(256)]
+    gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
+    return cv2.LUT(img, gamma_table)
 
 
 def main(args):
@@ -40,11 +57,11 @@ def main(args):
     std = (0.127, 0.079, 0.043)
 
     # load image
-    original_img = Image.open(args.pic_path).convert("RGB")
+    original_img = Pre_pic(args.pic_path)
     original_size = (original_img.size[1], original_img.size[0])
     if args.gt_path != "":
-        gt_img = Image.blend(original_img,
-                             Image.fromarray(cv2.cvtColor(cv2.imread(args.gt_path) * 255, cv2.COLOR_BGR2RGB)), 0.5)
+        gt = Image.fromarray(cv2.cvtColor(cv2.imread(args.gt_path) * 255, cv2.COLOR_BGR2RGB))
+        gt_img = Image.blend(original_img, gt, 0.5)
         gt_img.show(title="./gt.jpg")
 
     data_transform = transforms.Compose([transforms.ToTensor(),
@@ -80,13 +97,13 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--GPU', type=int, default=0, help='GPU_ID')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--weights_path', default='weights/loss_20220629202632/best_model.pth', type=str,
+    parser.add_argument('--weights_path', default='weights/loss_20220702001915/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
     parser.add_argument('--pic_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case131_day15_slice_0064.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case134_day0_slice_0048.png',
                         type=str, help='pic_path')
     parser.add_argument('--gt_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case131_day15_slice_0064.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case134_day0_slice_0048.png',
                         type=str, help='gt_path')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     args = parser.parse_args()
