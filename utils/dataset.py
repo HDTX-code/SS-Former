@@ -19,9 +19,10 @@ class UnetDataset(Dataset):
 
     def __getitem__(self, index):
         line = self.annotation_lines[index].split()
-        image_path = line[0]
+        image_path_list = (line[2], line[1], line[0])
+        image = np.stack([cv2.imread(img_path, cv2.IMREAD_GRAYSCALE) for img_path in image_path_list], axis=2)
         label_path = line[1]
-        img = self.Pre_pic(image_path)
+        img = self.Pre_pic(image)
         mask = Image.open(label_path).convert('RGB')
 
         if self.transforms is not None:
@@ -34,8 +35,7 @@ class UnetDataset(Dataset):
         h, w = int(line[2]), int(line[3])
         return h, w
 
-    def Pre_pic(self, pic_path):
-        png = cv2.imread(pic_path)
+    def Pre_pic(self, png):
         if not (png == 0).all():
             png = png * 5
             png[png > 255] = 255

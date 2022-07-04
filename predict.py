@@ -21,8 +21,7 @@ def time_synchronized():
     return time.time()
 
 
-def Pre_pic(pic_path):
-    png = cv2.imread(pic_path)
+def Pre_pic(png):
     if not (png == 0).all():
         png = png * 5
         png[png > 255] = 255
@@ -87,6 +86,10 @@ def main(args):
             [prediction[0][[0, item + 1], ...].argmax(0)
              for item in range(args.num_classes)], dim=0), original_size,
             interpolation=T.InterpolationMode.NEAREST).permute(1, 2, 0).cpu().numpy().astype(np.uint8) * 255
+        # predictions = F.resize(torch.stack(
+        #     [prediction[0][[2 * item, 2 * item + 1], ...].argmax(0)
+        #      for item in range(args.num_classes)], dim=0), original_size,
+        #     interpolation=T.InterpolationMode.NEAREST).permute(1, 2, 0).cpu().numpy().astype(np.uint8) * 255
         label_img = Image.fromarray(predictions)
         show_img = Image.blend(original_img, label_img, 0.5)
         show_img.show(title="./pre.jpg")
@@ -97,13 +100,13 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--GPU', type=int, default=0, help='GPU_ID')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--weights_path', default='weights/loss_20220703151518/best_model_mit_PLD_b4.pth', type=str,
+    parser.add_argument('--weights_path', default='weights/loss_20220703234527/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
     parser.add_argument('--pic_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case111_day0_slice_0083.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case125_day16_slice_0063.png',
                         type=str, help='pic_path')
     parser.add_argument('--gt_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case111_day0_slice_0083.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case125_day16_slice_0063.png',
                         type=str, help='gt_path')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     args = parser.parse_args()

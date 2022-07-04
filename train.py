@@ -91,7 +91,7 @@ def main(args):
                                           collate_fn=val_dataset.collate_fn)
 
     # model初始化
-    model = get_model(model_name=args.model_name, num_classes=args.num_classes + 1, pre=args.pretrained)
+    model = get_model(model_name=args.model_name, num_classes=args.num_classes * 2, pre=args.pretrained)
     model.to(device)
     # print(model(torch.ones([1, 3, 224, 224], device=device))['out'].shape)
 
@@ -199,7 +199,7 @@ def main(args):
             scaler.load_state_dict(checkpoint["scaler"])
 
     UnFreeze_start_Epoch = args.Init_Epoch + args.Freeze_Epoch if args.resume != '' else args.Freeze_Epoch
-    args.Freeze_Epoch = 0 if args.resume == '' else args.Freeze_Epoch
+    args.Freeze_Epoch = 0 if args.resume != '' else args.Freeze_Epoch
 
     print("---------start UnFreeze Train---------")
     for epoch in range(UnFreeze_start_Epoch + 1, args.UnFreeze_Epoch + args.Freeze_Epoch + 1):
@@ -256,10 +256,10 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--save_dir', type=str, default="./weights")
     parser.add_argument('--resume', type=str, default="", help='resume')
-    parser.add_argument('--GPU', type=int, default=3, help='GPU_ID')
+    parser.add_argument('--GPU', type=int, default=0, help='GPU_ID')
     parser.add_argument('--size', type=int, default=384, help='pic size')
-    parser.add_argument('--train', type=str, default=r"weights/train.txt", help="train_txt_path")
-    parser.add_argument('--val', type=str, default=r"weights/val.txt", help="val_txt_path")
+    parser.add_argument('--train', type=str, default=r"./weights/2.5D/train.txt", help="train_txt_path")
+    parser.add_argument('--val', type=str, default=r"./weights/2.5D/val.txt", help="val_txt_path")
     parser.add_argument('--optimizer_type_Freeze', type=str, default='adam', help='adam or sgd')
     parser.add_argument('--optimizer_type_UnFreeze', type=str, default='adam', help='adam or sgd')
     parser.add_argument('--num_classes', type=int, default=3)
