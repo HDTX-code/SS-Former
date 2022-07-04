@@ -97,13 +97,13 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--GPU', type=int, default=0, help='GPU_ID')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--weights_path', default='weights/loss_20220702001915/best_model_mit_PLD_b4.pth', type=str,
+    parser.add_argument('--weights_path', default='weights/loss_20220703151518/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
     parser.add_argument('--pic_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case134_day0_slice_0048.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case111_day0_slice_0083.png',
                         type=str, help='pic_path')
     parser.add_argument('--gt_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case134_day0_slice_0048.png',
+                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case111_day0_slice_0083.png',
                         type=str, help='gt_path')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     args = parser.parse_args()
