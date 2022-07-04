@@ -5,7 +5,7 @@ from utils.dice_coefficient_loss import build_target, dice_loss
 
 
 def Focal_Loss(inputs, target, cls_weights, num_classes=-100, alpha=0.5, gamma=2):
-    logpt = -nn.CrossEntropyLoss(weight=cls_weights, ignore_index=num_classes, reduction='none')(inputs, target)
+    logpt = -nn.functional.cross_entropy(inputs, target, ignore_index=num_classes, weight=cls_weights)
     pt = torch.exp(logpt)
     if alpha is not None:
         logpt *= alpha
@@ -23,8 +23,8 @@ def criterion(inputs, target, loss_weight=None, num_classes: int = 2, dice: bool
         for item in range(target.shape[-1]):
             loss_ce += 0.5 * nn.functional.cross_entropy(x[:, [2 * item, 2 * item + 1], ...], target[..., item],
                                                          ignore_index=ignore_index, weight=loss_weight)
-            loss_focal += Focal_Loss(x[:, [2 * item, 2 * item + 1], ...], target[..., item],
-                                     cls_weights=loss_weight, num_classes=ignore_index)
+            loss_focal += 10 * Focal_Loss(x[:, [2 * item, 2 * item + 1]], target[..., item],
+                                          cls_weights=loss_weight, num_classes=ignore_index)
             if dice is True:
                 dice_target = build_target(target[..., item], 2, ignore_index)
                 loss_dice += dice_loss(x[:, [2 * item, 2 * item + 1], ...], dice_target,

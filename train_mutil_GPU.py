@@ -97,7 +97,7 @@ def main(args):
     print("Creating model")
     # create model num_classes equal background + foreground classesc
     # model初始化
-    model = get_model(model_name=args.model_name, num_classes=args.num_classes + 1, pre=args.pretrained)
+    model = get_model(model_name=args.model_name, num_classes=args.num_classes * 2, pre=args.pretrained)
     model.to(device)
 
     if args.sync_bn:
@@ -275,8 +275,8 @@ if __name__ == '__main__':
     parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--save_dir', type=str, default="weights")
     parser.add_argument('--resume', type=str, default="", help='resume')
-    parser.add_argument('--train', type=str, default=r"weights/All_data/train.txt", help="train_txt_path")
-    parser.add_argument('--val', type=str, default=r"weights/All_data/val.txt", help="val_txt_path")
+    parser.add_argument('--train', type=str, default=r"weights/2.5D/train.txt", help="train_txt_path")
+    parser.add_argument('--val', type=str, default=r"weights/2.5D/val.txt", help="val_txt_path")
     parser.add_argument('--optimizer_type_Freeze', type=str, default='adam')
     parser.add_argument('--optimizer_type_UnFreeze', type=str, default='adam')
     parser.add_argument('--num_classes', type=int, default=3)
