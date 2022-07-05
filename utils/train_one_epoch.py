@@ -21,10 +21,10 @@ def criterion(inputs, target, loss_weight=None, num_classes: int = 2, dice: bool
     for name, x in inputs.items():
         # 忽略target中值为255的像素，255的像素是目标边缘或者padding填充
         for item in range(target.shape[-1]):
-            loss_ce += 0.5 * nn.functional.cross_entropy(x[:, [2 * item, 2 * item + 1], ...], target[..., item],
-                                                         ignore_index=ignore_index, weight=loss_weight)
-            loss_focal += 10 * Focal_Loss(x[:, [2 * item, 2 * item + 1]], target[..., item],
-                                          cls_weights=loss_weight, num_classes=ignore_index)
+            loss_ce += nn.functional.cross_entropy(x[:, [2 * item, 2 * item + 1], ...], target[..., item],
+                                                   ignore_index=ignore_index, weight=loss_weight)
+            loss_focal += Focal_Loss(x[:, [2 * item, 2 * item + 1]], target[..., item],
+                                     cls_weights=loss_weight, num_classes=ignore_index)
             if dice is True:
                 dice_target = build_target(target[..., item], 2, ignore_index)
                 loss_dice += dice_loss(x[:, [2 * item, 2 * item + 1], ...], dice_target,
@@ -83,6 +83,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, num_classes, c
             optimizer.step()
 
         lr = optimizer.param_groups[0]["lr"]
-        metric_logger.update(loss=loss.item(), lr=lr, loss_ce=loss_ce, loss_focal=loss_focal, loss_dice=loss_dice)
+        metric_logger.update(loss=loss.item(), lr=lr,
+                             loss_ce=loss_ce.item(),
+                             loss_focal=loss_focal.item(),
+                             loss_dice=loss_dice)
 
     return metric_logger.meters["loss"].global_avg, lr
