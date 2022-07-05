@@ -1,4 +1,5 @@
 # source /Home/atr2/homefun/zhf/SS-Former/train_sh/train_mutil_GPU.sh
+# source /devdata/home/homefun/SS-Former/train_sh/train_mutil_GPU.sh
 conda activate homefun
 # cd /devdata/home/homefun/SS-Former/
 cd /Home/atr2/homefun/zhf/SS-Former
