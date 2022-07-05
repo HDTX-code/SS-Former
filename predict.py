@@ -4,21 +4,29 @@ import os
 import time
 
 import numpy as np
+import pandas as pd
 import torch
 from PIL import Image
 import cv2
+from matplotlib import pyplot as plt
 
 from torchvision import transforms
 
 from torchvision.transforms import functional as F
 from torchvision import transforms as T
 
-from utils.utils import get_model
+from utils.utils import get_model, find_next, find_last
 
 
 def time_synchronized():
     torch.cuda.synchronize() if torch.cuda.is_available() else None
     return time.time()
+
+
+def plt_show_Image_image(image: Image):
+    plt.figure()
+    plt.imshow(image)
+    plt.show()
 
 
 def Pre_pic(png):
@@ -38,12 +46,12 @@ def gamma_trans(img, gamma):
 
 def main(args):
     # get devices
-    # torch.cuda.set_device(args.GPU)
+    torch.cuda.set_device(args.GPU)
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
     print("using {} device.".format(device))
 
     # model初始化
-    model = get_model(model_name=args.model_name, num_classes=args.num_classes + 1)
+    model = get_model(model_name=args.model_name, num_classes=args.num_classes * 2)
     model.to(device)
 
     # load train weights
@@ -56,12 +64,26 @@ def main(args):
     std = (0.127, 0.079, 0.043)
 
     # load image
-    original_img = Pre_pic(args.pic_path)
-    original_size = (original_img.size[1], original_img.size[0])
-    if args.gt_path != "":
-        gt = Image.fromarray(cv2.cvtColor(cv2.imread(args.gt_path) * 255, cv2.COLOR_BGR2RGB))
+    data_csv = pd.read_csv(args.csv_path)
+    original_img = Pre_pic(cv2.imread(os.path.join(args.pic_path, 'train_pic', args.id + '.png')))
+    img = cv2.imread(os.path.join(args.pic_path, 'train_pic', args.id + '.png'), cv2.IMREAD_GRAYSCALE)
+    next_img = cv2.imread(os.path.join(args.pic_path, 'train_pic',
+                                       find_next(data_csv,
+                                                 data_csv[data_csv["id"] == args.id].index.tolist()[0]) + '.png'),
+                          cv2.IMREAD_GRAYSCALE)
+    last_img = cv2.imread(os.path.join(args.pic_path, 'train_pic',
+                                       find_last(data_csv,
+                                                 data_csv[data_csv["id"] == args.id].index.tolist()[0]) + '.png'),
+                          cv2.IMREAD_GRAYSCALE)
+    image = Pre_pic(np.stack([next_img, img, last_img], axis=2))
+    original_size = (image.size[1], image.size[0])
+    if os.path.exists(os.path.join(args.pic_path, 'label_pic', args.id + '.png')):
+        gt = Image.fromarray(cv2.cvtColor(cv2.imread(os.path.join(args.pic_path,
+                                                                  'label_pic', args.id + '.png')) * 255,
+                                          cv2.COLOR_BGR2RGB))
         gt_img = Image.blend(original_img, gt, 0.5)
-        gt_img.show(title="./gt.jpg")
+        # gt_img.show(title="./gt.jpg")
+        plt_show_Image_image(gt_img)
 
     data_transform = transforms.Compose([transforms.ToTensor(),
                                          transforms.Normalize(mean=mean, std=std),
@@ -83,31 +105,25 @@ def main(args):
         print("inference time: {}".format(t_end - t_start))
 
         predictions = F.resize(torch.stack(
-            [prediction[0][[0, item + 1], ...].argmax(0)
+            [prediction[0][[2 * item, 2 * item + 1], ...].argmax(0)
              for item in range(args.num_classes)], dim=0), original_size,
             interpolation=T.InterpolationMode.NEAREST).permute(1, 2, 0).cpu().numpy().astype(np.uint8) * 255
-        # predictions = F.resize(torch.stack(
-        #     [prediction[0][[2 * item, 2 * item + 1], ...].argmax(0)
-        #      for item in range(args.num_classes)], dim=0), original_size,
-        #     interpolation=T.InterpolationMode.NEAREST).permute(1, 2, 0).cpu().numpy().astype(np.uint8) * 255
         label_img = Image.fromarray(predictions)
         show_img = Image.blend(original_img, label_img, 0.5)
-        show_img.show(title="./pre.jpg")
+        # show_img.show(title="./pre.jpg")
+        plt_show_Image_image(show_img)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Predict parameter setting')
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
-    parser.add_argument('--GPU', type=int, default=0, help='GPU_ID')
+    parser.add_argument('--GPU', type=int, default=2, help='GPU_ID')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--weights_path', default='weights/loss_20220703234527/best_model_mit_PLD_b4.pth', type=str,
+    parser.add_argument('--weights_path', default='weights/loss_20220704234728/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
-    parser.add_argument('--pic_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/train_pic/case125_day16_slice_0063.png',
-                        type=str, help='pic_path')
-    parser.add_argument('--gt_path',
-                        default=r'D:\work\project\DATA\Kaggle-uw/label_pic/case125_day16_slice_0063.png',
-                        type=str, help='gt_path')
+    parser.add_argument('--pic_path', default=r"/Home/atr2/homefun/zhf/DATA/UW/", type=str, help='pic_path')
+    parser.add_argument('--id', default=r'case88_day38_slice_0091', type=str, help='gt_path')
+    parser.add_argument('--csv_path', type=str, default=r"/Home/atr2/homefun/zhf/DATA/UW/data_csv.csv")
     parser.add_argument('--size', type=int, default=384, help='pic size')
     args = parser.parse_args()
 

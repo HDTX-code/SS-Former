@@ -5,6 +5,8 @@ import random
 import pandas as pd
 from tqdm import tqdm
 
+from utils.utils import find_last, find_next
+
 
 def main(args):
     print(args)
@@ -68,44 +70,6 @@ def main_d(args):
     f_train.close()
     f_val.close()
     print('train: {}'.format(len(train)) + '\n' + "val: {}".format(num - len(train)))
-
-
-def find_next(data, item):
-    day = int(data.loc[item, 'day_id'])
-    slice = int(data.loc[item, 'slice_id'])
-    case = int(data.loc[item, 'case_id'])
-    if len(data.loc[
-           data[(((data['day_id']) == day) & ((data['slice_id']) == (slice + 2)) &
-                 ((data['case_id']) == case))].index.tolist(), :]) == 1:
-        follow = data.loc[data[(((data['day_id']) == day) & ((data['slice_id']) == (slice + 2)) &
-                              ((data['case_id']) == case))].index.tolist()[0], 'id']
-    elif len(data.loc[
-             data[(((data['day_id']) == day) & ((data['slice_id']) == (slice + 1)) &
-                   ((data['case_id']) == case))].index.tolist(), :]) == 1:
-        follow = data.loc[data[(((data['day_id']) == day) & ((data['slice_id']) == (slice + 1)) &
-                              ((data['case_id']) == case))].index.tolist()[0], 'id']
-    else:
-        follow = data.loc[item, 'id']
-    return follow
-
-
-def find_last(data, item):
-    day = data.loc[item, 'day_id']
-    slice = data.loc[item, 'slice_id']
-    case = data.loc[item, 'case_id']
-    if len(data.loc[
-           data[(((data['day_id']) == day) & ((data['slice_id']) == (slice - 2)) &
-                 ((data['case_id']) == case))].index.tolist(), :]) == 1:
-        last = data.loc[data[(((data['day_id']) == day) & ((data['slice_id']) == (slice - 2)) &
-                              ((data['case_id']) == case))].index.tolist()[0], 'id']
-    elif len(data.loc[
-           data[(((data['day_id']) == day) & ((data['slice_id']) == (slice - 1)) &
-                 ((data['case_id']) == case))].index.tolist(), :]) == 1:
-        last = data.loc[data[(((data['day_id']) == day) & ((data['slice_id']) == (slice - 1)) &
-                              ((data['case_id']) == case))].index.tolist()[0], 'id']
-    else:
-        last = data.loc[item, 'id']
-    return last
 
 
 if __name__ == '__main__':
