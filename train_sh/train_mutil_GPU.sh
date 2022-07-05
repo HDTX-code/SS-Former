@@ -1,5 +1,6 @@
 # source /Home/atr2/homefun/zhf/SS-Former/train_sh/train_mutil_GPU.sh
 conda activate homefun
+# cd /devdata/home/homefun/SS-Former/
 cd /Home/atr2/homefun/zhf/SS-Former
 CUDA_VISIBLE_DEVICES=1,2 \
 python -m torch.distributed.launch --nproc_per_node=2 \

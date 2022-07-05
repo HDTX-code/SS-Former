@@ -1,5 +1,6 @@
 # source /Home/atr2/homefun/zhf/SS-Former/train_sh/train_mutil_GPU.sh
 conda activate homefun
+# cd /devdata/home/homefun/SS-Former/
 cd /Home/atr2/homefun/zhf/SS-Former
 nohup python train.py --GPU 0 \
                       --Freeze_batch_size 148 \
