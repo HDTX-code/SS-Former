@@ -167,7 +167,6 @@ def main(args):
         del df_ssub['segmentation']
         sub_df = df_ssub.merge(sub_df, on=['id', 'class'])
 
-    del sub_df[["slice_id", "day_id", "case_id"]]
     sub_df[['id', 'class', 'predicted']].to_csv(os.path.join(args.save_dir, 'submission.csv'), index=False)
 
 
