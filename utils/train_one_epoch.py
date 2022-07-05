@@ -71,7 +71,9 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, num_classes, c
             output = model(image)
             loss_ce, loss_focal, loss_dice = criterion(output, target, num_classes=num_classes, ignore_index=255,
                                                        loss_weight=cls_weights)
-            loss = loss_ce + loss_focal + loss_dice
+            loss = (loss_focal.item() / (loss_ce.item() + loss_focal.item())) * loss_ce \
+                   + (loss_ce.item() / (loss_ce.item() + loss_focal.item())) * loss_focal \
+                   + loss_dice
 
         optimizer.zero_grad()
         if scaler is not None:
