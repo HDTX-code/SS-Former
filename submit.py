@@ -175,7 +175,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_name', type=str, default='mit_PLD_b4')
     parser.add_argument('--size', type=int, default=384, help='pic size')
     parser.add_argument('--num_classes', type=int, default=3)
-    parser.add_argument('--batch_size', type=int, default=2)
+    parser.add_argument('--batch_size', type=int, default=72)
     parser.add_argument('--num_workers', type=int, default=24, help="num_workers")
     parser.add_argument('--weights_path', default='weights/loss_20220704234728/best_model_mit_PLD_b4.pth', type=str,
                         help='training weights')
